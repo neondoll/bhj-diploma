@@ -19,16 +19,16 @@ const createRequest = (options = {}) => {
     } else {
       const formData = new FormData;
 
-      Object.entries(options.data).forEach(([key, value]) => (formData.append(key, value)));
+      Object.entries(options.data).forEach(([key, value]) => {
+        formData.append(key, value);
+      });
 
       xhr.open(options.method, options.url);
       xhr.send(formData);
     }
 
     xhr.responseType = 'json'; // формат, в котором необходимо выдать результат
-    xhr.onload = function () {
-      console.log(xhr.response);
-
+    xhr.onload = () => {
       if (xhr.response) {
         options.callback(xhr.response.error, xhr.response);
       }

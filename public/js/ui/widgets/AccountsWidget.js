@@ -2,7 +2,6 @@
  * Класс AccountsWidget управляет блоком
  * отображения счетов в боковой колонке
  * */
-
 class AccountsWidget {
   /**
    * Устанавливает текущий элемент в свойство element.
@@ -41,8 +40,6 @@ class AccountsWidget {
       accountElement.querySelector('a').addEventListener('click', (event) => {
         event.preventDefault();
 
-        console.log(event);
-
         this.onSelectAccount(accountElement);
       });
     });
@@ -63,8 +60,7 @@ class AccountsWidget {
       Account.list({}, (err, response) => {
         if (response.success) {
           this.clear();
-
-          response.data.forEach((item) => (this.renderItem(item)));
+          this.renderItem(response.data);
         }
       });
     }
@@ -116,6 +112,16 @@ class AccountsWidget {
    * и добавляет его внутрь элемента виджета
    * */
   renderItem(data) {
-    this.element.insertAdjacentHTML('beforeEnd', this.getAccountHTML(data));
+    data.forEach((item) => {
+      this.element.insertAdjacentHTML('beforeEnd', this.getAccountHTML(item));
+
+      // TODO: Только так придумала как сделать, чтобы событие отрабатывало
+      const accountElement = this.element.querySelector('.account:last-child');
+      accountElement.querySelector('a').addEventListener('click', (event) => {
+        event.preventDefault();
+
+        this.onSelectAccount(accountElement);
+      });
+    });
   }
 }
