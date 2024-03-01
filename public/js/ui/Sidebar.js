@@ -36,6 +36,26 @@ class Sidebar {
    * выходу устанавливает App.setState( 'init' )
    * */
   static initAuthLinks() {
+    Array.from(document.querySelectorAll('.menu-item')).forEach((menuItemElement) => {
+      menuItemElement.querySelector('a').addEventListener('click', (event) => {
+        event.preventDefault();
 
+        switch (true) {
+          case menuItemElement.classList.contains('menu-item_login'):
+            App.getModal('login').open();
+            break;
+          case menuItemElement.classList.contains('menu-item_register'):
+            App.getModal('register').open();
+            break;
+          case menuItemElement.classList.contains('menu-item_logout'):
+            User.logout((err, response) => {
+              if (response.success) {
+                App.setState('init');
+              }
+            });
+            break;
+        }
+      });
+    });
   }
 }
