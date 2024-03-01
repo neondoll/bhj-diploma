@@ -23,7 +23,7 @@ class TransactionsPage {
    * Вызывает метод render для отрисовки страницы
    * */
   update() {
-    this.render();
+    this.render(this.lastOptions);
   }
 
   /**
@@ -56,14 +56,14 @@ class TransactionsPage {
   removeAccount() {
     if (this.lastOptions) {
       if (confirm('Вы действительно хотите удалить счёт?')) {
-        Account.remove(this.lastOptions, (err, response) => {
-          console.log('TransactionsPage.removeAccount -> Account.remove', response);
-
+        Account.remove({id: this.lastOptions.account_id}, (err, response) => {
           if (response.success) {
             App.updateWidgets();
             App.updateForms();
           }
         });
+
+        this.clear();
       }
     }
   }
@@ -77,8 +77,6 @@ class TransactionsPage {
   removeTransaction(id) {
     if (confirm('Вы действительно хотите удалить эту транзакцию?')) {
       Transaction.remove({id}, (err, response) => {
-        console.log('TransactionsPage.removeTransaction -> Transaction.remove', response);
-
         if (response.success) {
           App.update();
         }
@@ -97,16 +95,12 @@ class TransactionsPage {
       this.lastOptions = options;
 
       Account.get(options.account_id, (err, response) => {
-        console.log('TransactionsPage.render -> Account.get', response);
-
         if (response.success) {
-          this.renderTitle('');
+          this.renderTitle(response.data.name);
         }
       });
 
-      Transaction.list({}, (err, response) => {
-        console.log('TransactionsPage.render -> Transaction.list', response);
-
+      Transaction.list({account_id: options.account_id}, (err, response) => {
         if (response.success) {
           this.renderTransactions(response.data);
         }
@@ -164,9 +158,16 @@ class TransactionsPage {
    * */
   renderTransactions(data) {
     const contentElement = this.element.querySelector('.content');
+    contentElement.innerHTML = '';
 
     data.forEach((item) => {
       contentElement.insertAdjacentHTML('beforeEnd', this.getTransactionHTML(item));
+
+      // TODO: Только так придумала как сделать, чтобы событие отрабатывало
+      const transactionRemoveElement = this.element.querySelector('.transaction:last-child .transaction__remove');
+      transactionRemoveElement.addEventListener('click', (event) => {
+        this.removeTransaction(transactionRemoveElement.dataset.id);
+      });
     });
   }
 }
