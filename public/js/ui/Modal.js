@@ -13,7 +13,7 @@ class Modal {
    * */
   constructor(element) {
     if (!element) {
-      throw 'Был передан пустой элемент в Modal';
+      throw new Error('Был передан пустой элемент в Modal');
     }
 
     this.element = element;
@@ -39,7 +39,6 @@ class Modal {
    * */
   onClose(e) {
     e.preventDefault();
-
     this.close();
   }
 

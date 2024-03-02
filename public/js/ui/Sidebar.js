@@ -20,7 +20,7 @@ class Sidebar {
   static initToggleButton() {
     const sidebarMiniElement = document.querySelector('.sidebar-mini');
 
-    document.querySelector('.sidebar-toggle').addEventListener('click', function (event) {
+    document.querySelector('.sidebar-toggle').addEventListener('click', (event) => {
       event.preventDefault();
 
       sidebarMiniElement.classList.toggle('sidebar-open');
@@ -31,7 +31,7 @@ class Sidebar {
   /**
    * При нажатии на кнопку входа, показывает окно входа
    * (через найденное в App.getModal)
-   * При нажатии на кнопку регастрации показывает окно регистрации
+   * При нажатии на кнопку регистрации показывает окно регистрации
    * При нажатии на кнопку выхода вызывает User.logout и по успешному
    * выходу устанавливает App.setState( 'init' )
    * */
