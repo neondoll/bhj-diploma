@@ -13,7 +13,7 @@ class UserWidget {
    * */
   constructor(element) {
     if (!element) {
-      throw 'Был передан пустой элемент в UserWidget';
+      throw new Error('Был передан пустой элемент в UserWidget');
     }
 
     this.element = element;

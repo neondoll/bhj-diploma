@@ -14,7 +14,7 @@ class AsyncForm {
    * */
   constructor(element) {
     if (!element) {
-      throw 'Был передан пустой элемент в AsyncForm';
+      throw new Error('Был передан пустой элемент в AsyncForm');
     }
 
     this.element = element;
@@ -28,7 +28,6 @@ class AsyncForm {
   registerEvents() {
     this.element.addEventListener('submit', (event) => {
       event.preventDefault();
-
       this.submit();
     });
   }
@@ -41,17 +40,12 @@ class AsyncForm {
    * }
    * */
   getData() {
-    const data = {};
+    const formData = new FormData(this.element);
 
-    Array.from((new FormData(this.element)).entries()).forEach((item) => {
-      data[item[0]] = item[1];
-    });
-
-    return data;
+    return Object.fromEntries(formData.entries());
   }
 
   onSubmit(options) {
-
   }
 
   /**

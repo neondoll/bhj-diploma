@@ -12,7 +12,7 @@ class TransactionsPage {
    * */
   constructor(element) {
     if (!element) {
-      throw 'Был передан пустой элемент в TransactionsPage';
+      throw new Error('Был передан пустой элемент в TransactionsPage');
     }
 
     this.element = element;
@@ -33,14 +33,17 @@ class TransactionsPage {
    * TransactionsPage.removeAccount соответственно
    * */
   registerEvents() {
-    this.element.querySelector('.remove-account').addEventListener('click', (event) => {
-      this.removeAccount();
-    });
+    this.element.addEventListener('click', (event) => {
+      const transactionRemoveElement = event.target.closest('.transaction__remove');
 
-    Array.from(this.element.querySelectorAll('.transaction__remove')).forEach((transactionRemoveElement) => {
-      transactionRemoveElement.addEventListener('click', (event) => {
-        this.removeTransaction(transactionRemoveElement.dataset.id);
-      });
+      switch (true) {
+        case Boolean(event.target.closest('.remove-account')):
+          this.removeAccount();
+          break;
+        case Boolean(transactionRemoveElement):
+          this.removeTransaction(transactionRemoveElement.dataset.id);
+          break;
+      }
     });
   }
 
@@ -149,7 +152,31 @@ class TransactionsPage {
    * item - объект с информацией о транзакции
    * */
   getTransactionHTML(item) {
-    return `<div class="transaction transaction_${item.type} row"><div class="col-md-7 transaction__details"><div class="transaction__icon"><span class="fa fa-money fa-2x"></span></div><div class="transaction__info"><h4 class="transaction__title">${item.name}</h4><div class="transaction__date">${this.formatDate(item.created_at)}</div></div></div><div class="col-md-3"><div class="transaction__summ">${item.sum} <span class="currency">₽</span></div></div><div class="col-md-2 transaction__controls"><button class="btn btn-danger transaction__remove" data-id="${item.id}"><i class="fa fa-trash"></i></button></div></div>`;
+    return `<div class="transaction transaction_${item.type} row">
+    <div class="col-md-7 transaction__details">
+        <div class="transaction__icon">
+            <span class="fa fa-money fa-2x"></span>
+        </div>
+        <div class="transaction__info">
+            <h4 class="transaction__title">
+                ${item.name}
+            </h4>
+            <div class="transaction__date">
+                ${this.formatDate(item.created_at)}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="transaction__summ">
+            ${item.sum} <span class="currency">₽</span>
+        </div>
+    </div>
+    <div class="col-md-2 transaction__controls">
+        <button class="btn btn-danger transaction__remove" data-id="${item.id}">
+            <i class="fa fa-trash"></i>
+        </button>
+    </div>
+</div>`;
   }
 
   /**
@@ -157,17 +184,9 @@ class TransactionsPage {
    * используя getTransactionHTML
    * */
   renderTransactions(data) {
-    const contentElement = this.element.querySelector('.content');
-    contentElement.innerHTML = '';
-
-    data.forEach((item) => {
-      contentElement.insertAdjacentHTML('beforeEnd', this.getTransactionHTML(item));
-
-      // TODO: Только так придумала как сделать, чтобы событие отрабатывало
-      const transactionRemoveElement = this.element.querySelector('.transaction:last-child .transaction__remove');
-      transactionRemoveElement.addEventListener('click', (event) => {
-        this.removeTransaction(transactionRemoveElement.dataset.id);
-      });
-    });
+    this.element.querySelector('.content').innerHTML = data.reduce(
+      (acc, item) => acc + this.getTransactionHTML(item),
+      ''
+    );
   }
 }

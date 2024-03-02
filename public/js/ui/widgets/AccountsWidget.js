@@ -14,7 +14,7 @@ class AccountsWidget {
    * */
   constructor(element) {
     if (!element) {
-      throw 'Был передан пустой элемент в AccountsWidget';
+      throw new Error('Был передан пустой элемент в AccountsWidget');
     }
 
     this.element = element;
@@ -30,18 +30,19 @@ class AccountsWidget {
    * вызывает AccountsWidget.onSelectAccount()
    * */
   registerEvents() {
-    this.element.querySelector('.create-account').addEventListener('click', (event) => {
-      event.preventDefault();
+    this.element.addEventListener('click', (event) => {
+      const accountElement = event.target.closest('.account');
 
-      App.getModal('createAccount').open();
-    });
-
-    Array.from(this.element.querySelectorAll('.account')).forEach((accountElement) => {
-      accountElement.querySelector('a').addEventListener('click', (event) => {
-        event.preventDefault();
-
-        this.onSelectAccount(accountElement);
-      });
+      switch (true) {
+        case Boolean(event.target.closest('.create-account')):
+          event.preventDefault();
+          App.getModal('createAccount').open();
+          break;
+        case Boolean(accountElement):
+          event.preventDefault();
+          this.onSelectAccount(accountElement);
+          break;
+      }
     });
   }
 
@@ -92,7 +93,6 @@ class AccountsWidget {
     });
 
     element.classList.add('active');
-
     App.showPage('transactions', {account_id: element.dataset.id});
   }
 
@@ -102,7 +102,11 @@ class AccountsWidget {
    * item - объект с данными о счёте
    * */
   getAccountHTML(item) {
-    return `<li class="account" data-id="${item.id}"><a href="#"><span>${item.name}</span> / <span>${item.sum} ₽</span></a></li>`;
+    return `<li class="account" data-id="${item.id}">
+    <a href="#">
+        <span>${item.name}</span> / <span>${item.sum} ₽</span>
+    </a>
+</li>`;
   }
 
   /**
@@ -114,14 +118,6 @@ class AccountsWidget {
   renderItem(data) {
     data.forEach((item) => {
       this.element.insertAdjacentHTML('beforeEnd', this.getAccountHTML(item));
-
-      // TODO: Только так придумала как сделать, чтобы событие отрабатывало
-      const accountElement = this.element.querySelector('.account:last-child');
-      accountElement.querySelector('a').addEventListener('click', (event) => {
-        event.preventDefault();
-
-        this.onSelectAccount(accountElement);
-      });
     });
   }
 }

@@ -12,6 +12,10 @@ class TransactionsWidget {
    * необходимо выкинуть ошибку.
    * */
   constructor(element) {
+    if (!element) {
+      throw new Error('Был передан пустой элемент в TransactionsWidget');
+    }
+
     this.element = element;
     this.registerEvents();
   }
@@ -23,17 +27,15 @@ class TransactionsWidget {
    * экземпляра окна
    * */
   registerEvents() {
-    Array.from(this.element.querySelectorAll('.btn')).forEach((btnElement) => {
-      btnElement.addEventListener('click', (event) => {
-        switch (true) {
-          case btnElement.classList.contains('create-income-button'):
-            App.getModal('newIncome').open();
-            break;
-          case btnElement.classList.contains('create-expense-button'):
-            App.getModal('newExpense').open();
-            break;
-        }
-      });
+    this.element.addEventListener('click', (event) => {
+      switch (true) {
+        case Boolean(event.target.closest('.create-income-button')):
+          App.getModal('newIncome').open();
+          break;
+        case Boolean(event.target.closest('.create-expense-button')):
+          App.getModal('newExpense').open();
+          break;
+      }
     });
   }
 }
